@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary SEO -->
+    <title>CIPNFT — Your IP. Encrypted. Tokenized. | Cryptographic Information Protocol NFT</title>
+    <meta name="description" content="CIPNFT (Cryptographic Information Protocol NFT / Cipher NFT) tokenizes scientific and intellectual property as encrypted, fully on-chain metadata NFTs. Uses standard public cryptography, buyer-safe escrowed sales, optional view keys, and an optional quantum-resistant envelope mode." />
+    <link rel="canonical" href="./index.html" />
+
+    <!-- Keywords -->
+    <meta name="keywords" content="CIPNFT, Cipher NFT, Cryptographic Information Protocol NFT, encrypted NFT, on-chain encryption, on-chain metadata, intellectual property, scientific IP, DeSci, decentralized science, key envelope, XChaCha20-Poly1305, libsodium sealed box, Curve25519, ML-KEM, post-quantum cryptography, quantum-resistant encryption, escrow marketplace, encrypted vault" />
+
+    <!-- Author / Publisher -->
+    <meta name="author" content="Decentralized Science Labs" />
+    <meta name="publisher" content="GenesisL1 Blockchain (L1 Coin)" />
+    <meta name="copyright" content="© 2026 Decentralized Science Labs" />
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+
+    <!-- Theme / Icon / License -->
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="./favicon.ico" />
+    <link rel="license" href="../LICENSE" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CIPNFT — Your IP. Encrypted. Tokenized." />
+    <meta property="og:description" content="Encrypted IP NFTs with on-chain ciphertext, buyer-safe escrowed sales, and optional quantum-resistant envelopes." />
+    <meta property="og:url" content="./index.html" />
+    <meta property="og:site_name" content="CIPNFT" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="./og/cipnft-preview.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CIPNFT — Encrypted IP NFTs" />
+    <meta name="twitter:description" content="On-chain ciphertext NFTs for scientific IP. Standard encryption by default, optional quantum-resistant envelopes." />
+    <meta name="twitter:image" content="./og/cipnft-preview.png" />
+
+    <!-- Web3 / DeSci hints -->
+    <meta name="web3:category" content="Decentralized Science" />
+    <meta name="web3:domain" content="intellectual property" />
+    <meta name="web3:keywords" content="encrypted nfts, on-chain encryption, scientific ip, quantum-resistant" />
+
+    <!-- Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- Structured data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "CIPNFT",
+      "applicationCategory": "BlockchainApplication",
+      "operatingSystem": "Web",
+      "description": "CIPNFT (Cipher NFT) is a browser-only protocol for tokenizing and transferring encrypted, fully on-chain metadata NFTs for scientific and intellectual property workflows. Includes buyer-safe escrowed sales, on-chain Terms acceptance, configurable fees, and an optional quantum-resistant envelope mode.",
+      "license": "https://opensource.org/license/mit/",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Decentralized Science Labs",
+        "parentOrganization": {"@type": "Organization", "name": "GenesisL1"}
+      }
+    }
+    </script>
+
+    <!-- Local vendor libs (no CDN) -->
+    <script defer src="./vendor/ethers.umd.min.js"></script>
+    <script defer src="./vendor/sodium.js"></script>
+    <script defer src="./effects.js"></script>
+    <script defer src="./config.js"></script>
+    <script defer src="./cipnft.js"></script>
+    <script defer src="./index.js"></script>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <nav>
+        <a class="logo" href="./index.html" aria-label="CIPNFT home">
+            <span></span>
+            CIPNFT
+        </a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">☰</button>
+        <div class="nav-links">
+            <a href="./mint.html#tokenize-card">Encrypt, Tokenize, View 🐇</a>
+            <a href="./marketplace.html">IP Marketplace</a>
+            <a href="./index.html#protocol">Protocol</a>
+            <a href="./terms.html">Terms</a>
+            <a href="https://cipnft.com/CIPNFT_on_GenesisL1_Whitepaper.pdf" target="_blank" rel="noopener">Whitepaper</a>
+        </div>
+        <div class="wallet-box">
+            <button class="btn allow-disconnected" id="btnConnect">CONNECT WALLET</button>
+            <div class="wallet-sub mono" id="statusKeyLogin">KEY LOGIN STATUS: NO LOGIN ACTIVE</div>
+            <a class="wallet-link mono" id="noWalletLink" href="./mint.html#key-login-card" style="display:none;">// KEY LOGIN + REGISTRATION</a>
+        </div>
+    </nav>
+
+    <header>
+        <div class="status-bar mono">
+            SYSTEM STATUS: SECURE // STANDARD + OPTIONAL QUANTUM-RESISTANT ENVELOPES
+        </div>
+
+        <h1 id="main-title" aria-label="Your IP. Encrypted. Tokenized.">
+            <span class="cipher-line" data-plain="Your IP.">Your IP.</span><br>
+            <span class="cipher-line" data-plain="Encrypted.">Encrypted.</span><br>
+            <span class="cipher-line" data-plain="Tokenized.">Tokenized.</span>
+        </h1>
+
+        <div class="hero-desc">
+            <p>
+              <b>CIPNFT</b> stands for <b>Cryptographic Information Protocol NFT</b> (aka <b>Cipher NFT</b>). Metadata is encrypted in the browser and stored as <b>ciphertext fully on-chain</b>.
+              Transfers update a compact on-chain <b>key envelope</b>, so only the current owner (or an optional view-key holder) can decrypt.
+              Encryption is <b>standard by default</b>, with an <b>optional quantum-resistant envelope</b> mode for long-term confidentiality.
+            </p>
+        </div>
+
+        <div>
+            <a class="btn" style="background: var(--text-main); color: white; text-decoration:none;" href="./mint.html">START TOKENIZING</a>
+            <a class="btn" style="margin-left: 1rem; text-decoration:none;" href="./terms.html">READ TERMS</a>
+        </div>
+
+        <div class="hash-stream">
+            CIPNFT://vault<br>
+            STANDARD: X25519 SEAL...<br>
+            OPTIONAL: ML-KEM...<br>
+            XCHACHA20...<br>
+            ONCHAIN STATE...<br>
+            BLOCK FINALIZED...
+        </div>
+    </header>
+
+    <section class="stats-bar">
+        <div class="stat-item">
+            <h3 data-target="65536">0</h3>
+            <p class="mono">Max Plaintext Bytes</p>
+        </div>
+        <div class="stat-item">
+            <h3 data-target="1160">0</h3>
+            <p class="mono">Key Envelope (80B / 1160B)</p>
+        </div>
+        <div class="stat-item">
+            <h3>XCHACHA</h3>
+            <p class="mono">Encryption Standard</p>
+        </div>
+    </section>
+
+    <section class="showcase">
+        <div class="section-header">
+            <div>
+                <p class="mono" style="color: var(--accent);">// THE MARKET</p>
+                <h2>Encrypted IP Assets</h2>
+            </div>
+            <a href="./marketplace.html" style="color: var(--text-main); text-decoration: none; border-bottom: 1px solid black;">VIEW IP MARKETPLACE</a>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-image">
+                    <div style="width: 50px; height: 50px; background: var(--accent); border-radius: 50%;"></div>
+                    <div class="encrypted-layer">
+                        <div class="lock-icon">🔒</div>
+                    </div>
+                </div>
+                <div class="mono" style="font-size: 0.7rem; color: var(--text-muted);">CIPHERTEXT: ONCHAIN</div>
+                <div class="card-meta">
+                    <h4>Encrypted Metadata NFT</h4>
+                    <span class="mono">LISTED</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <div style="width: 40px; height: 60px; background: #333;"></div>
+                    <div class="encrypted-layer">
+                        <div class="lock-icon">🔒</div>
+                    </div>
+                </div>
+                <div class="mono" style="font-size: 0.7rem; color: var(--text-muted);">OWNER ENVELOPE: SMALL</div>
+                <div class="card-meta">
+                    <h4>Re-wrap on Transfer</h4>
+                    <span class="mono">ATOMIC</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-image">
+                    <div style="width: 60px; height: 40px; border: 2px solid var(--accent);"></div>
+                    <div class="encrypted-layer">
+                        <div class="lock-icon">🔒</div>
+                    </div>
+                </div>
+                <div class="mono" style="font-size: 0.7rem; color: var(--text-muted);">OPTIONAL VIEW KEY</div>
+                <div class="card-meta">
+                    <h4>Shareable Decryption</h4>
+                    <span class="mono">OPT-IN</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tech-stack" id="protocol">
+        <div class="tech-grid">
+            <div>
+                <p class="mono" style="color: #666;">// PROTOCOL</p>
+                <h2 style="font-size: 2.5rem; margin: 1rem 0;">Cryptographic Information Protocol NFT</h2>
+                <p style="color: #aaa; margin-bottom: 2rem;">
+                  CIPNFT stores <b>ciphertext on-chain</b>. Encryption happens client-side using <b>XChaCha20-Poly1305</b> with a per-token 32-byte DEK.
+                  The DEK is stored as an on-chain <b>owner envelope</b> and re-wrapped on transfer.
+                  Standard mode uses a compact envelope; an optional <b>quantum-resistant</b> envelope mode is available for long-term confidentiality.
+                  Tokenization is gated by <b>on-chain Terms</b> (versioned acceptance) and <b>on-chain fees</b> (flat + per-byte).
+                </p>
+                <a class="btn" style="border-color: #fff; color: #fff; text-decoration:none;" href="./terms.html">VIEW TERMS & FEES</a>
+            </div>
+
+            <ul class="tech-list">
+                <li>
+                    <span>Client-Side Encryption (XChaCha20-Poly1305)</span>
+                    <span class="status">ACTIVE</span>
+                </li>
+                <li>
+                    <span>On-Chain Ciphertext Storage</span>
+                    <span class="status">ACTIVE</span>
+                </li>
+                <li>
+                    <span>Owner Key Envelope (standard + optional PQ)</span>
+                    <span class="status">ACTIVE</span>
+                </li>
+                <li>
+                    <span>Buyer-Safe Escrowed Sales (deliver → finalize)</span>
+                    <span class="status">ACTIVE</span>
+                </li>
+                <li>
+                    <span>On-Chain Terms (versioned acceptance)</span>
+                    <span class="status">ACTIVE</span>
+                </li>
+                <li>
+                    <span>On-Chain Fees (flat + per-byte)</span>
+                    <span class="status">ACTIVE</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <a class="logo" href="./index.html" aria-label="CIPNFT home">
+            <span></span>
+            CIPNFT
+        </a>
+        <div class="footer-legal">
+            <div class="mono" style="color: var(--text-muted);">© 2026 Decentralized Science Labs</div>
+            <div>
+              Built for <span class="mono" style="text-transform:none; letter-spacing:0.02em;">GenesisL1 Blockchain</span> (L1 Coin). CIPNFT is open-source under the <a href="https://github.com/GenesisL1/cipnft" target="_blank" rel="noopener">MIT License</a>.
+            </div>
+        </div>
+        <div class="nav-links">
+      <a href="./mint.html">Encrypt and Tokenize 🐇</a>
+            <a href="./marketplace.html">IP Marketplace</a>
+            <a href="./mint.html#load-token-card">Decrypt and View</a>
+        </div>
+    </footer>
+
+</body>
+</html>

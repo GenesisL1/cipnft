@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIPNFT — IP Marketplace</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <script src="./vendor/ethers.umd.min.js"></script>
+  <script src="./vendor/sodium.js"></script>
+
+  <script src="./effects.js" defer></script>
+  <script src="./config.js"></script>
+  <script src="./cipnft.js"></script>
+  <script src="./marketplace.js" defer></script>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <nav>
+    <a class="logo" href="./index.html" aria-label="CIPNFT"><span></span>CIPNFT</a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">☰</button>
+
+    <div class="nav-links">
+      <a href="./mint.html">Encrypt, Tokenize, View</a>
+      <a href="./marketplace.html">IP Marketplace</a>
+      <a href="./terms.html">Terms</a>
+      <a href="./index.html#protocol">Protocol</a>
+      <a href="https://cipnft.com/CIPNFT_on_GenesisL1_Whitepaper.pdf" target="_blank" rel="noopener noreferrer">Whitepaper</a>
+    </div>
+
+    <div class="wallet-box">
+      <button class="btn allow-disconnected" id="btnConnect">CONNECT WALLET</button>
+      <div class="wallet-sub mono" id="statusKeyLogin">KEY LOGIN STATUS: —</div>
+      <a class="wallet-link mono" id="noWalletLink" href="./mint.html#key-login-card" style="display:none;">// KEY LOGIN + REGISTRATION</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="status-bar mono" id="statusBar">
+      <div id="statusWallet">WALLET: —</div>
+      <div id="statusChain">CHAIN: —</div>
+      <div id="statusContract">CONTRACT: —</div>
+    </div>
+
+    <h1>Encrypted IP Marketplace</h1>
+    <p class="hero-desc">
+      Browse on-chain listings. Make offers. Then finalize buyer-safe after the owner delivers encrypted access.
+    </p>
+    <div class="actions" style="margin-top: 2rem;">
+      <a class="btn" href="./mint.html#load-token-card">OPEN CONSOLE</a>
+      <a class="btn primary" href="./mint.html#tokenize-card">TOKENIZE NEW</a>
+    </div>
+
+    <div class="hash-stream" id="hashStream"></div>
+  </header>
+
+  <section class="showcase">
+    <div class="section-header">
+      <div>
+        <p class="mono" style="color: var(--accent);">// THE MARKET</p>
+        <h2>On‑Chain Listings</h2>
+        <p class="hero-desc" style="margin: 0; color: var(--text-muted);">Browse listed tokens. If connected, the UI shows your current offer (if any).</p>
+      </div>
+      <div style="min-width: 320px; text-align:right;">
+        <div class="mono" id="listingsPageInfo" style="color: var(--text-muted);">—</div>
+        <div class="actions" style="justify-content:flex-end; margin-top: 10px;">
+          <button class="btn small" id="btnNewer">NEWER</button>
+          <button class="btn small" id="btnOlder">OLDER</button>
+        </div>
+        <div class="mono" style="color: var(--text-muted); margin-top: 8px;">Showing 6 listings per page (latest first)</div>
+      </div>
+    </div>
+
+    <div class="grid market" id="listingsOut"></div>
+  </section>
+
+  <section class="showcase" style="padding-top: 0;">
+    <div class="section-header">
+      <div>
+        <p class="mono" style="color: var(--accent);">// OFFERS</p>
+        <h2>Incoming + My Offers</h2>
+        <p class="hero-desc" style="margin: 0; color: var(--text-muted);">
+          Incoming offers are offers made to tokens you own (owner delivers). My offers are offers you have made as a buyer.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid dual">
+      <div class="card" id="incoming-offers-card">
+        <p class="mono" style="color: var(--accent);">// INCOMING OFFERS</p>
+        <h3 style="margin-top: 0.5rem;">Deliver Escrowed Offers (Owner)</h3>
+        <p class="hero-desc" style="margin-top: 0.75rem;">
+          This loads <b>all offers</b> across <b>all tokens you currently own</b> using the contract’s on-chain <span class="mono">owner index</span> + offer index (state).
+          It does <b>not</b> preload full token ciphertext.
+          Each offer row includes the <b>token ID</b> and an <b>OPEN</b> link.
+          Delivering requires your owner decryption identity (Key Login).
+        </p>
+
+        <div class="actions">
+          <button class="btn small" id="btnScanOffers">LOAD ALL OFFERS</button>
+        </div>
+
+        <div class="table" id="offersTable" style="margin-top: 12px;"></div>
+        <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="offersStatus">—</div>
+
+        <hr class="hr" />
+
+        <div class="field">
+          <p class="mono" style="color: var(--accent);">// VIEW KEY ON TRANSFER</p>
+          <div style="margin-top: 10px;">
+            <label style="display:flex; gap:10px; align-items:center;">
+              <input type="radio" name="vkMode" value="clear" checked style="width:auto;" />
+              clear view key
+            </label>
+            <label style="display:flex; gap:10px; align-items:center; margin-top: 8px;">
+              <input type="radio" name="vkMode" value="keep" style="width:auto;" />
+              keep existing view key
+            </label>
+            <label style="display:flex; gap:10px; align-items:center; margin-top: 8px;">
+              <input type="radio" name="vkMode" value="new" style="width:auto;" />
+              set new view key
+            </label>
+          </div>
+        </div>
+
+        <div class="field" id="newViewKeyBox" style="display:none;">
+          <label>New view key</label>
+          <input id="newViewKeyOut" readonly />
+          <div class="actions" style="margin-top: 10px;">
+            <button class="btn small" id="btnGenNewViewKey">GENERATE</button>
+            <button class="btn small" id="btnCopyNewViewKey">COPY</button>
+            <button class="btn small" id="btnDownloadNewViewKey">DOWNLOAD .TXT</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="my-offers-card">
+        <p class="mono" style="color: var(--accent);">// MY OFFERS</p>
+        <h3 style="margin-top: 0.5rem;">Your Active Offers (Buyer)</h3>
+        <p class="hero-desc" style="margin-top: 0.75rem;">
+          Offers are visible on-chain. This panel reads your offers from the contract’s on-chain offer index (state) and verifies each offer’s current status.
+          If an offer shows <span class="mono">DELIVERED / READY</span>, click <b>VERIFY & FINALIZE</b> to complete the trade (buyer-safe).
+        </p>
+        <div class="actions" style="margin-top: 10px;">
+          <button class="btn small" id="btnLoadMyOffers">LOAD MY OFFERS</button>
+        </div>
+        <div class="table" id="myOffersTable" style="margin-top: 12px;"></div>
+        <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="myOffersStatus">—</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <a class="logo" href="./index.html" aria-label="CIPNFT"><span></span>CIPNFT</a>
+    <div class="footer-legal">
+      <div class="mono" style="color: var(--text-muted);">© 2026 Decentralized Science Labs</div>
+      <div>
+        Built for <span class="mono" style="text-transform:none; letter-spacing:0.02em;">GenesisL1 Blockchain</span> (L1 Coin).
+        CIPNFT is open-source under the MIT License.
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html">Encrypt, Tokenize, View</a>
+      <a href="./marketplace.html">IP Marketplace</a>
+    </div>
+  </footer>
+</body>
+</html>

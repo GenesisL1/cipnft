@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIPNFT — Redirecting…</title>
+  <script>
+    // Legacy URL: verify.html → mint.html (Load Token card)
+    (function(){
+      try {
+        const u = new URL(window.location.href);
+        const tid = u.searchParams.get('tokenId');
+        let dest = './mint.html#load-token-card';
+        if (tid && String(tid).trim() !== '') {
+          dest = `./mint.html?tokenId=${encodeURIComponent(String(tid).trim())}#load-token-card`;
+        }
+        window.location.replace(dest);
+      } catch (_) {
+        window.location.replace('./mint.html#load-token-card');
+      }
+    })();
+  </script>
+</head>
+<body>
+  Redirecting to the CIPNFT Console…
+</body>
+</html>

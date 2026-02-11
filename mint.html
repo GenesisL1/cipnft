@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CIPNFT — Encrypt, Tokenize, View</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- libs -->
+  <script src="./vendor/ethers.umd.min.js"></script>
+  <script src="./vendor/sodium.js"></script>
+
+  <!-- UI effects (mobile menu). Nav cipher toggle is disabled on this page via body attribute. -->
+  <script src="./effects.js" defer></script>
+
+  <!-- app -->
+  <script src="./config.js"></script>
+  <script src="./cipnft.js"></script>
+  <script src="./mint_console.js" defer></script>
+</head>
+<body data-disable-nav-cipher="1">
+  <div class="grid-bg"></div>
+
+  <nav>
+    <a class="logo" href="./index.html" aria-label="CIPNFT"><span></span>CIPNFT</a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">☰</button>
+
+    <div class="nav-links">
+      <a href="./mint.html">Encrypt, Tokenize, View</a>
+      <a href="./marketplace.html">IP Marketplace</a>
+      <a href="./terms.html">Terms</a>
+      <a href="./index.html#protocol">Protocol</a>
+      <a href="https://cipnft.com/CIPNFT_on_GenesisL1_Whitepaper.pdf" target="_blank" rel="noopener noreferrer">Whitepaper</a>
+    </div>
+
+    <div class="wallet-box">
+      <button class="btn allow-disconnected" id="btnConnect">CONNECT WALLET</button>
+      <div class="wallet-sub mono" id="statusKeyLogin">KEY LOGIN STATUS: —</div>
+      <a class="wallet-link mono" id="noWalletLink" href="./mint.html#key-login-card" style="display:none;">// KEY LOGIN + REGISTRATION</a>
+    </div>
+  </nav>
+
+  <header class="app-header">
+    <div class="status-bar mono" id="statusBar">
+      <div id="statusWallet">WALLET: —</div>
+      <div id="statusChain">CHAIN: —</div>
+      <div id="statusContract">CONTRACT: —</div>
+    </div>
+
+    <h1>Encrypt. Tokenize. View.</h1>
+    <p class="hero-desc">
+      One console for the full CIPNFT flow: register your encryption identity, accept Terms, tokenize encrypted metadata,
+      decrypt by owner or with a view key, manage your vault, and handle offers.
+    </p>
+  </header>
+
+  <section class="showcase" style="padding-top: 3rem;">
+    <div class="section-header">
+      <div>
+        <p class="mono" style="color: var(--accent);">// ENCRYPT, TOKENIZE, VIEW</p>
+        <h2>CIPNFT Console</h2>
+      </div>
+    </div>
+
+    <div class="app-layout">
+      <!-- Column 1 (left) -->
+      <div class="app-col">
+        <div class="card" id="key-login-card">
+          <p class="mono" style="color: var(--accent);">// KEY LOGIN + REGISTRATION</p>
+          <h3 id="keyCardTitle" style="margin-top: 0.5rem;">Classic Encryption Key Registration (Owner Identity)</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            <b>Key login</b> creates (or imports) your local secret key in this browser.
+            <b>Key registration</b> stores only the corresponding public key on-chain so other participants can encrypt to you.
+            Standard is X25519 sealed-box; Quantum-resistant is ML‑KEM‑768.
+          </p>
+
+          <div class="advanced-warn mono" style="margin-top: 0.75rem; font-weight:700;">
+            <b>WARNING:</b> SAVE YOUR <b>SEED / PRIVATE KEY</b> AND YOUR <b>VIEW KEY</b> (IF ENABLED). IF YOU LOSE THEM, YOU CAN NOT DECRYPT YOUR NFTs. THERE IS NO RECOVERY.
+          </div>
+
+          <div class="field">
+            <label>Encryption mode for new tokenizations</label>
+            <select id="encModeSelect">
+              <option value="classic" selected>CLASSIC — X25519 sealed box</option>
+              <option value="pqc">QUANTUM‑RESISTANT — ML‑KEM‑768 envelope</option>
+            </select>
+          </div>
+
+          <div id="classicKeyPanel">
+            <div class="field">
+              <label>Seed (hex, 32 bytes)</label>
+              <input id="seedHex" placeholder="0x…" readonly />
+            </div>
+
+            <div class="field">
+              <label>Public key (hex, 32 bytes)</label>
+              <input id="pubKeyHex" placeholder="0x…" readonly />
+            </div>
+
+            <div class="actions">
+              <button class="btn small requires-wallet" id="btnDerive">1. DERIVE KEY (SIGN) 🐇</button>
+              <button class="btn small requires-wallet" id="btnExportSeed">EXPORT SEED</button>
+              <button class="btn small requires-wallet" id="btnImportSeed">IMPORT SEED</button>
+              <button class="btn small requires-wallet" id="btnClearSeed">CLEAR</button>
+            </div>
+
+            <hr class="hr" />
+
+            <div class="actions">
+              <button class="btn small requires-wallet" id="btnRegisterPubKey">2. REGISTER PUBKEY ONCHAIN 🐇</button>
+              <span class="mono" style="color: var(--text-muted);" id="pubKeyStatus">—</span>
+            </div>
+          </div>
+
+          <div id="pqcKeyPanel" style="display:none;">
+            <div class="field">
+              <label>PQC Seed (raw‑seed, hex)</label>
+              <input id="pqcSeedHex" placeholder="0x…" readonly />
+            </div>
+
+            <div class="field">
+              <label>PQC Public Key (ML‑KEM‑768)</label>
+              <input id="pqcPubInfo" placeholder="not derived" readonly />
+            </div>
+
+            <div class="actions">
+              <button class="btn small" id="btnGenPqcKey">1. GENERATE PQC KEY 🐇</button>
+              <button class="btn small" id="btnExportPqcSeed">DOWNLOAD SEED</button>
+              <button class="btn small" id="btnImportPqcSeed">IMPORT SEED</button>
+              <button class="btn small" id="btnClearPqcSeed">CLEAR</button>
+            </div>
+
+            <details class="advanced">
+              <summary class="mono">ADVANCED</summary>
+              <div class="advanced-body">
+                <div class="advanced-warn mono">
+                  WARNING: DERIVE (SIGN) IS NOT PQ-SAFE IF YOUR WALLET SIGNING BREAKS.
+                </div>
+                <div class="actions" style="margin-top: 0.9rem;">
+                  <button class="btn small danger requires-wallet" id="btnDerivePqcKey">DERIVE (SIGN)</button>
+                </div>
+              </div>
+            </details>
+
+            <hr class="hr" />
+
+            <div class="actions">
+              <button class="btn small requires-wallet" id="btnRegisterPqcPubKey">2. REGISTER PQC PUBKEY ONCHAIN 🐇</button>
+              <span class="mono" style="color: var(--text-muted);" id="pqcKeyStatus">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="terms-card">
+          <p class="mono" style="color: var(--accent);">// TERMS + FEES</p>
+          <h3 style="margin-top: 0.5rem;">On‑Chain Terms (Required)</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            Tokenization is blocked unless you accept the current Terms version on-chain.
+          </p>
+
+          <div class="field">
+            <div class="mono" style="color: var(--text-muted);">CURRENT TERMS</div>
+            <div style="display:flex; gap: 10px; flex-wrap:wrap; margin-top: 8px;">
+              <span class="pill" id="tosVerPill">TOS v—</span>
+              <span class="pill" id="tosAcceptedPill">Not connected</span>
+            </div>
+          </div>
+
+          <div class="actions" style="margin-top: 1.1rem;">
+            <button class="btn small requires-wallet" id="btnAcceptTos">ACCEPT CURRENT TERMS ONCHAIN</button>
+            <button class="btn small allow-disconnected" id="btnToggleTermsText" type="button">SHOW TERMS TEXT</button>
+          </div>
+
+          <div class="field" id="termsTextBox" style="margin-top: 12px; display:none;">
+            <div class="mono" style="color: var(--text-muted);">TERMS TEXT (ON‑CHAIN)</div>
+            <div class="tos-markup" id="tosTextOut" style="margin-top: 10px; max-height: 420px; overflow:auto;"></div>
+            <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="termsTextStatus">—</div>
+          </div>
+
+          <hr class="hr" />
+
+          <div class="field">
+            <div class="mono" style="color: var(--text-muted);">TOKENIZATION FEES (ONCHAIN)</div>
+            <div class="kv" style="margin-top: 10px;">
+              <div class="mono" style="color: var(--text-muted);">flat fee</div>
+              <div class="mono" id="flatFeeOut">—</div>
+            </div>
+            <div class="kv">
+              <div class="mono" style="color: var(--text-muted);">per byte</div>
+              <div class="mono" id="perByteFeeOut">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="tokenize-card">
+          <p class="mono" style="color: var(--accent);">// ENCRYPT DATA AND TOKENIZE</p>
+          <h3 style="margin-top: 0.5rem;">Metadata (Plaintext)</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            Plaintext is encrypted client-side, then stored as ciphertext in contract state.
+          </p>
+
+          <div class="field">
+            <label>Public Title (visible to anyone, max 5 words)</label>
+            <input id="titleIn" type="text" placeholder="e.g. Novel Peptide Docking Notes" />
+            <div class="mono" id="titleHelp" style="color: var(--text-muted); margin-top: 8px; font-size:0.75rem;">
+              Title is stored on-chain in plaintext. Keep it short (≤ 5 words).
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Metadata (UTF‑8, max 65,536 bytes)</label>
+            <textarea id="metadataIn" placeholder='Data encrypted on-chain using classical or quantum-resistant cryptography.'></textarea>
+          </div>
+
+          <div class="kv" style="margin-top: 12px;">
+            <div class="mono" style="color: var(--text-muted);">plaintext bytes</div>
+            <div class="mono" id="plainBytesOut">0</div>
+          </div>
+
+          <div class="kv">
+            <div class="mono" style="color: var(--text-muted);">estimated tokenization fee</div>
+            <div class="mono" id="mintFeeOut">—</div>
+          </div>
+
+          <hr class="hr" />
+
+          <div class="field">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap: 10px; flex-wrap:wrap;">
+              <div>
+                <p class="mono" style="color: var(--accent);">// OPTIONAL VIEW KEY</p>
+                <p class="hero-desc" style="margin: 6px 0 0;">If enabled, anyone with the plaintext key can decrypt. This key is never stored on-chain.</p>
+              </div>
+              <label class="mono" style="display:flex; gap:10px; align-items:center; margin:0;">
+                <input id="chkViewKey" type="checkbox" checked style="width:auto;" />
+                enable
+              </label>
+            </div>
+
+            <div class="advanced-warn mono" style="margin-top: 0.75rem; font-weight:700;">
+              <b>WARNING:</b> THE <b>VIEW KEY</b> IS NEVER STORED ON-CHAIN. IF YOU WANT VIEW ACCESS, SAVE IT NOW. ALSO SAVE YOUR <b>SEED / PRIVATE KEY</b>.
+            </div>
+
+            <div class="field" style="margin-top: 10px;">
+              <label>View key (plaintext)</label>
+              <input id="viewKeyOut" readonly />
+            </div>
+
+            <div class="actions">
+              <button class="btn small requires-wallet" id="btnNewViewKey">REGENERATE</button>
+              <button class="btn small requires-wallet" id="btnCopyViewKey">COPY</button>
+              <button class="btn small requires-wallet" id="btnDownloadViewKey">DOWNLOAD .TXT</button>
+            </div>
+          </div>
+
+          <hr class="hr" />
+
+          <div class="actions">
+            <button class="btn requires-wallet" style="background: var(--text-main); color: #fff;" id="btnMint">TOKENIZE ENCRYPTED IP</button>
+            <span class="mono" style="color: var(--text-muted);" id="mintStatus">—</span>
+          </div>
+
+          <div class="field" style="margin-top: 12px;">
+            <div class="mono" style="color: var(--text-muted);">OUTPUT</div>
+            <div class="console" id="consoleOut"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2 (right) -->
+      <div class="app-col">
+        <div class="card" id="load-token-card">
+          <p class="mono" style="color: var(--accent);">// LOAD TOKEN</p>
+          <h3 style="margin-top: 0.5rem;">Fetch On‑Chain Ciphertext</h3>
+
+          <div class="field" style="margin-top: 1rem;">
+            <label>Token ID</label>
+            <input id="tokenIdIn" type="number" min="0" placeholder="e.g. 1" />
+          </div>
+
+          <div class="actions">
+            <button class="btn small" id="btnLoadToken">LOAD TOKEN</button>
+            <button class="btn small" id="btnClearToken">CLEAR</button>
+          </div>
+
+          <hr class="hr" />
+
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">owner</div><div class="mono" id="ownerOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">title</div><div class="mono" id="titleOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">tos version</div><div class="mono" id="tosOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">listed</div><div class="mono" id="listedOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">price</div><div class="mono" id="priceOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">mode</div><div class="mono" id="modeOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">cipher bytes</div><div class="mono" id="cipherBytesOut">—</div></div>
+          <div class="kv"><div class="mono" style="color: var(--text-muted);">view key enabled</div><div class="mono" id="viewEnabledOut">—</div></div>
+
+          <div class="field" style="margin-top: 12px;">
+            <label>Ciphertext (preview)</label>
+            <div class="cipher-box mono" id="cipherPreviewOut">—</div>
+          </div>
+          <div class="actions" style="margin-top: 8px;">
+            <button class="btn small" id="btnToggleCipher" type="button">LOAD FULL CIPHERTEXT</button>
+          </div>
+          <div class="field" style="margin-top: 12px; display:none;" id="cipherFullBox">
+            <label>Full ciphertext (hex)</label>
+            <textarea id="cipherFullOut" readonly style="height: 220px;"></textarea>
+          </div>
+
+          <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="tokenStatus">—</div>
+        </div>
+
+        <div class="card" id="owner-decrypt-card">
+          <p class="mono" style="color: var(--accent);">// OWNER DECRYPT</p>
+          <h3 style="margin-top: 0.5rem;">Decrypt as Owner</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            Uses your encryption identity from <a class="link" href="#key-login-card">Key Login + Registration</a> to decrypt the loaded token.
+          </p>
+
+          <div class="advanced-warn mono" style="margin-top: 0.75rem; font-weight:700;">
+            <b>WARNING:</b> SAVE YOUR <b>SEED / PRIVATE KEY</b> AND YOUR <b>VIEW KEY</b> (IF USED). IF YOU LOSE THEM, YOU CAN NOT DECRYPT YOUR NFT. THERE IS NO RECOVERY.
+          </div>
+
+          <div class="actions" style="margin-top: 1rem;">
+            <button class="btn" style="background: var(--text-main); color: #fff;" id="btnDecryptOwner">DECRYPT AS OWNER</button>
+            <span class="mono" style="color: var(--text-muted);" id="ownerDecryptStatus">—</span>
+          </div>
+
+          <div class="field" style="margin-top: 12px;">
+            <label>Decrypted plaintext</label>
+            <textarea id="plainOut" readonly></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn small" id="btnDownloadPlain">DOWNLOAD PLAINTEXT</button>
+          </div>
+        </div>
+
+        <div class="card" id="view-key-card">
+          <p class="mono" style="color: var(--accent);">// VIEW KEY</p>
+          <h3 style="margin-top: 0.5rem;">Decrypt with View Key</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">If the token has view access enabled, anyone with the plaintext key can decrypt.</p>
+
+          <div class="advanced-warn mono" style="margin-top: 0.75rem; font-weight:700;">
+            <b>WARNING:</b> SAVE YOUR <b>VIEW KEY</b>. IT IS NEVER STORED ON-CHAIN AND CAN NOT BE RECOVERED.
+          </div>
+
+          <div class="field">
+            <label>View key</label>
+            <input id="viewKeyIn" placeholder="cipnft_vk_..." />
+          </div>
+          <div class="actions">
+            <button class="btn small" id="btnLoadSavedViewKey">LOAD SAVED</button>
+            <button class="btn small" id="btnDecryptViewKey">DECRYPT</button>
+          </div>
+
+          <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="viewDecryptStatus">—</div>
+        </div>
+      </div>
+
+      <!-- Bottom merged column -->
+      <div class="app-bottom">
+        <div class="card" id="my-vault-card">
+          <p class="mono" style="color: var(--accent);">// MY VAULT</p>
+          <h3 style="margin-top: 0.5rem;">Manage Your Tokens</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            Sync tokens you currently own from the contract's on-chain <span class="mono">owner index</span> (state-based), then list/delist,
+            update price, scrub encrypted data from current state, or burn the token.
+          </p>
+
+          <div class="field" style="margin-top: 8px;">
+            <label>Erase max words (per erase step)</label>
+            <input id="eraseMaxWords" type="number" min="1" value="600" />
+            <div class="mono" style="color: var(--text-muted); margin-top: 8px; font-size:0.75rem;">
+              ERASE scrubs ciphertext from current state in chunks. Use a smaller value if a transaction runs out of gas.
+            </div>
+          </div>
+
+          <div class="actions" style="margin-top: 10px;">
+            <button class="btn small" id="btnScanMyTokens">SYNC MY TOKENS</button>
+            <button class="btn small" id="btnClearMyTokens">CLEAR</button>
+            <span class="mono" style="color: var(--text-muted);" id="myTokensStatus">—</span>
+          </div>
+
+          <div class="table" id="myTokensTable" style="margin-top: 12px;"></div>
+
+          <div class="mono" style="color: var(--text-muted); margin-top: 10px;">
+            Delete options:
+            <span class="pill warn">ERASE</span> removes ciphertext from “current state” (history remains);
+            <span class="pill bad">BURN</span> destroys the NFT.
+          </div>
+        </div>
+
+        <div class="card" id="incoming-offers-card">
+          <p class="mono" style="color: var(--accent);">// INCOMING OFFERS</p>
+          <h3 style="margin-top: 0.5rem;">Offers for Your Tokens (Owner)</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            This loads <b>all offers</b> across <b>all tokens you currently own</b> using the contract’s on-chain <span class="mono">owner index</span> + offer index (state).
+            It does <b>not</b> preload full token ciphertext.
+            Each offer row includes the <b>token ID</b> and an <b>OPEN</b> link.
+            Delivering requires your owner decryption identity (to re-wrap the DEK).
+          </p>
+
+          <div class="actions">
+            <button class="btn small" id="btnScanOffers">LOAD ALL OFFERS</button>
+          </div>
+
+          <div class="table" id="offersTable" style="margin-top: 12px;"></div>
+          <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="offersStatus">—</div>
+
+          <hr class="hr" />
+
+          <div class="field">
+            <p class="mono" style="color: var(--accent);">// VIEW KEY ON TRANSFER</p>
+            <div style="margin-top: 10px;">
+              <label style="display:flex; gap:10px; align-items:center;">
+                <input type="radio" name="vkMode" value="clear" checked style="width:auto;" />
+                clear view key
+              </label>
+              <label style="display:flex; gap:10px; align-items:center; margin-top: 8px;">
+                <input type="radio" name="vkMode" value="keep" style="width:auto;" />
+                keep existing view key
+              </label>
+              <label style="display:flex; gap:10px; align-items:center; margin-top: 8px;">
+                <input type="radio" name="vkMode" value="new" style="width:auto;" />
+                set new view key
+              </label>
+            </div>
+          </div>
+
+          <div class="field" id="newViewKeyBox" style="display:none;">
+            <label>New view key</label>
+            <input id="newViewKeyOut" readonly />
+            <div class="actions" style="margin-top: 10px;">
+              <button class="btn small" id="btnGenNewViewKey">GENERATE</button>
+              <button class="btn small" id="btnCopyNewViewKey">COPY</button>
+              <button class="btn small" id="btnDownloadNewViewKey">DOWNLOAD .TXT</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="my-offers-card">
+          <p class="mono" style="color: var(--accent);">// MY OFFERS</p>
+          <h3 style="margin-top: 0.5rem;">Your Offers (Buyer)</h3>
+          <p class="hero-desc" style="margin-top: 0.75rem;">
+            Offers are visible on-chain. This panel reads your offers from the contract’s on-chain offer index (state) and verifies each offer’s current status.
+            If an offer shows <span class="mono">DELIVERED / READY</span>, click <b>VERIFY & FINALIZE</b> to complete the trade (buyer-safe).
+          </p>
+
+          <div class="actions" style="margin-top: 10px;">
+            <button class="btn small" id="btnLoadMyOffers">LOAD MY OFFERS</button>
+          </div>
+
+          <div class="table" id="myOffersTable" style="margin-top: 12px;"></div>
+          <div class="mono" style="color: var(--text-muted); margin-top: 10px;" id="myOffersStatus">—</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <a class="logo" href="./index.html" aria-label="CIPNFT"><span></span>CIPNFT</a>
+    <div class="footer-legal">
+      <div class="mono" style="color: var(--text-muted);">© 2026 Decentralized Science Labs</div>
+      <div>
+        Built for <span class="mono" style="text-transform:none; letter-spacing:0.02em;">GenesisL1 Blockchain</span> (L1 Coin).
+        CIPNFT is open-source under the MIT License.
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html">Encrypt, Tokenize, View</a>
+      <a href="./marketplace.html">IP Marketplace</a>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title>CIPNFT — Terms & Fees | On-Chain Policy</title>
+  <meta name="description" content="Read the current on-chain Terms of Service and view the current protocol fees (flat tokenization fee and per-byte fee) fetched directly from the CIPNFT smart contract." />
+  <link rel="canonical" href="./terms.html" />
+
+  <meta name="keywords" content="CIPNFT terms of service, on-chain terms, protocol fees, per-byte tokenization fee, flat tokenization fee, DeSci, encrypted IP tokenization protocol" />
+  <meta name="author" content="Decentralized Science Labs" />
+  <meta name="publisher" content="GenesisL1 Blockchain (L1 Coin)" />
+  <meta name="copyright" content="© 2026 Decentralized Science Labs" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="CIPNFT — Terms & Fees" />
+  <meta property="og:description" content="On-chain Terms of Service and protocol fees fetched directly from the smart contract." />
+  <meta property="og:url" content="./terms.html" />
+  <meta property="og:site_name" content="CIPNFT" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="./og/cipnft-preview.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CIPNFT — Terms & Fees" />
+  <meta name="twitter:description" content="Read the current on-chain Terms and see the current protocol fees fetched from chain." />
+  <meta name="twitter:image" content="./og/cipnft-preview.png" />
+
+  <!-- Theme / Icon / License -->
+  <meta name="theme-color" content="#ffffff" />
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="license" href="../LICENSE" />
+
+  <!-- Performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./style.css" />
+
+  <!-- Structured data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "CIPNFT — Terms & Fees",
+    "description": "On-chain Terms of Service and protocol fees fetched directly from the CIPNFT smart contract.",
+    "isPartOf": {"@type": "WebSite", "name": "CIPNFT"},
+    "publisher": {"@type": "Organization", "name": "Decentralized Science Labs", "parentOrganization": {"@type": "Organization", "name": "GenesisL1"}}
+  }
+  </script>
+
+  <script defer src="./vendor/ethers.umd.min.js"></script>
+  <script defer src="./vendor/sodium.js"></script>
+  <script defer src="./effects.js"></script>
+  <script defer src="./config.js"></script>
+  <script defer src="./cipnft.js"></script>
+  <script defer src="./terms.js"></script>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <nav>
+    <a class="logo" href="./index.html" aria-label="CIPNFT home"><span></span>CIPNFT</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu" aria-expanded="false">☰</button>
+    <div class="nav-links">
+      <a href="./mint.html#tokenize-card">Encrypt and Tokenize 🐇</a>
+      <a href="./marketplace.html">IP Marketplace</a>
+      <a href="./mint.html#load-token-card">Decrypt and View</a>
+      <a href="./index.html#protocol">Protocol</a>
+      <a href="./terms.html">Terms</a>
+      <a href="https://cipnft.com/CIPNFT_on_GenesisL1_Whitepaper.pdf" target="_blank" rel="noopener">Whitepaper</a>
+    </div>
+    <div class="wallet-box">
+      <button class="btn allow-disconnected" id="btnConnect">CONNECT WALLET</button>
+      <div class="wallet-sub mono" id="statusKeyLogin">KEY LOGIN STATUS: NO LOGIN ACTIVE</div>
+      <a class="wallet-link mono" id="noWalletLink" href="./mint.html#key-login-card" style="display:none;">// KEY LOGIN + REGISTRATION</a>
+    </div>
+  </nav>
+
+  <header style="height: auto; padding: 4rem 5% 2rem;">
+    <div class="status-bar mono" style="position: static; margin-bottom: 1rem;">
+      <span id="statusContract">CONTRACT: —</span>
+      <span style="margin-left: 12px;" id="statusChain">CHAIN: —</span>
+      <span style="margin-left: 12px;" id="statusWallet">WALLET: —</span>
+    </div>
+
+    <h1 style="margin-bottom: 1.25rem;">
+      Terms.<br>
+      Fees.<br>
+      On‑Chain.
+    </h1>
+
+    <div class="hero-desc" style="margin-bottom: 2rem;">
+      <p>
+        Tokenization is allowed only if you accept the current on-chain Terms version.
+        Fees are enforced by the contract (flat + per-byte).
+      </p>
+    </div>
+
+    <div>
+      <a class="btn" style="background: var(--text-main); color: white; text-decoration:none;" href="./mint.html#tokenize-card">GO TO TOKENIZE</a>
+      <a class="btn" style="margin-left: 1rem; text-decoration:none;" href="./index.html#protocol">READ PROTOCOL</a>
+    </div>
+  </header>
+
+  <section class="showcase" style="padding-top: 2rem;">
+    <div class="section-header">
+      <div>
+        <p class="mono" style="color: var(--accent);">// ON-CHAIN TERMS</p>
+        <h2>Current Terms & Fees</h2>
+        <p class="hero-desc" style="margin: 0; color: var(--text-muted);">
+          Data below is fetched directly from the CIPNFT contract.
+        </p>
+      </div>
+      <div class="actions">
+        <button class="btn small" id="btnRefresh">REFRESH</button>
+        <button class="btn small requires-wallet" id="btnAccept">ACCEPT CURRENT TERMS</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <p class="mono" style="color: var(--accent);">// STATUS</p>
+        <h3 style="margin-top: 0.5rem;">Version & Acceptance</h3>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 1rem;">
+          <span class="pill" id="tosVerPill">TOS v—</span>
+          <span class="pill" id="tosAcceptedPill">Not connected</span>
+        </div>
+
+        <div class="kv" style="margin-top: 1.25rem;">
+          <div class="mono" style="color: var(--text-muted);">tos hash</div>
+          <div class="mono" id="tosHashOut">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="mono" style="color: var(--accent);">// FEES</p>
+        <h3 style="margin-top: 0.5rem;">Tokenization Fee Schedule</h3>
+
+        <div class="kv" style="margin-top: 1rem;">
+          <div class="mono" style="color: var(--text-muted);">flat fee</div>
+          <div class="mono" id="flatFeeOut">—</div>
+        </div>
+        <div class="kv">
+          <div class="mono" style="color: var(--text-muted);">per byte</div>
+          <div class="mono" id="perByteFeeOut">—</div>
+        </div>
+
+        <hr class="hr" />
+
+        <div class="kv">
+          <div class="mono" style="color: var(--text-muted);">example (10kb)</div>
+          <div class="mono" id="ex10k">—</div>
+        </div>
+        <div class="kv">
+          <div class="mono" style="color: var(--text-muted);">example (64kb)</div>
+          <div class="mono" id="ex64k">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="mono" style="color: var(--accent);">// OFFERS</p>
+        <h3 style="margin-top: 0.5rem;">Offer Rules (Spam Resistance)</h3>
+
+        <div class="kv" style="margin-top: 1rem;">
+          <div class="mono" style="color: var(--text-muted);">max expiry</div>
+          <div class="mono" id="maxOfferOut">—</div>
+        </div>
+        <div class="kv">
+          <div class="mono" style="color: var(--text-muted);">minimum offer price</div>
+          <div class="mono" id="minOfferOut">—</div>
+        </div>
+      </div>
+
+      <div class="card" style="grid-column: 1 / -1;">
+        <p class="mono" style="color: var(--accent);">// TEXT</p>
+        <h3 style="margin-top: 0.5rem;">Terms of Service (On‑Chain)</h3>
+        <div class="field" style="margin-top: 1rem;">
+          <div id="tosTextOut" class="tos-markup" style="min-height: 360px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mono" style="color: var(--text-muted); margin-top: 14px;" id="termsStatus">—</div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+
+  <footer>
+    <a class="logo" href="./index.html" aria-label="CIPNFT home"><span></span>CIPNFT</a>
+    <div class="footer-legal">
+      <div class="mono" style="color: var(--text-muted);">© 2026 Decentralized Science Labs</div>
+      <div>
+        Built for <span class="mono" style="text-transform:none; letter-spacing:0.02em;">GenesisL1 Blockchain</span> (L1 Coin). CIPNFT is open-source under the <a href="https://github.com/GenesisL1/cipnft" target="_blank" rel="noopener">MIT License</a>.
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="./mint.html#tokenize-card">Encrypt and Tokenize 🐇</a>
+      <a href="./marketplace.html">IP Marketplace</a>
+      <a href="./mint.html#load-token-card">Decrypt and View</a>
+    </div>
+  </footer>
+
+</body>
+</html>
